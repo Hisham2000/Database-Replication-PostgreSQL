@@ -23,7 +23,7 @@ This setup includes:
 - **db-slave1** and **db-slave2**: Replicas that are synchronized with the master. They are used for read operations.
 - **Pgpool-II**: Load balancer to distribute read queries across the slaves and write queries to the master.
 
-![architecture]([[https://path/to/your-architecture-diagram.png](https://www.virtuozzo.com/company/blog/wp-content/uploads/2020/06/postgresql-master-slave-replication.png)](https://www.virtuozzo.com/company/blog/wp-content/uploads/2020/06/postgresql-master-slave-replication.png))
+![Architecture](https://www.virtuozzo.com/company/blog/wp-content/uploads/2020/06/postgresql-master-slave-replication.png)
 
 ---
 
