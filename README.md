@@ -52,12 +52,12 @@ Pgpool-II is a middleware that provides load balancing for read queries and ensu
 
 1. **Clone the repository:**
     ```bash
-    git clone https://github.com/your-repo/docker-postgresql-replication.git
+    git clone [https://github.com/your-repo/docker-postgresql-replication.git](https://github.com/Hisham2000/Database-Replication-PostgreSQL.git)
     ```
 
 2. **Navigate to the directory:**
     ```bash
-    cd docker-postgresql-replication
+    cd Database-Replication-PostgreSQL
     ```
 
 3. **Start the services:**
