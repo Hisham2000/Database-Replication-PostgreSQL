@@ -11,17 +11,9 @@ Easily set up **Pgpool-II** and **PostgreSQL** using Docker Compose for load bal
 ## 📋 Table of Contents
 
 - [🌟 Features](#-features)
-- [⚙️ Requirements](#-requirements)
 - [🚀 Quick Start](#-quick-start)
 - [🗂️ Folder Structure](#️-folder-structure)
-- [🔧 Docker Compose Services](#-docker-compose-services)
-- [📊 Usage](#-usage)
-  - [Connecting to Pgpool-II](#connecting-to-pgpool-ii)
-  - [Volumes](#volumes)
-  - [Monitoring](#monitoring)
-- [🐞 Common Issues](#-common-issues)
 - [📝 License](#-license)
-- [📤 Pushing to GitHub](#-pushing-to-github)
 
 ---
 
