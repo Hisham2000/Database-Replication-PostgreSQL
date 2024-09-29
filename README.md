@@ -58,8 +58,6 @@ To get this project running locally, follow these steps:
 
 ---
 
----
-
 ## 🗂️ Folder Structure
 
 ```bash
