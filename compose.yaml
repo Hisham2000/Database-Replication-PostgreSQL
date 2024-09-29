@@ -1,0 +1,117 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Master
+  db-master:
+    image: bitnami/postgresql:latest
+    container_name: db-master
+    user: "0:0"  # Run as root
+    environment:
+      - POSTGRESQL_DATABASE=crm
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_REPLICATION_MODE=master
+      - POSTGRESQL_REPLICATION_USER=replicator
+      - POSTGRESQL_REPLICATION_PASSWORD=replicatorpassword
+    ports:
+      - "5463:5432"  # Host port 5463 mapped to container port 5432
+    volumes:
+      - master_data:/bitnami/postgresql
+    healthcheck:
+      test: ["CMD", "/opt/bitnami/scripts/postgresql/healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  # PostgreSQL Replica 1
+  db-slave1:
+    image: bitnami/postgresql:latest
+    container_name: db-slave1
+    user: "0:0"  # Run as root
+    environment:
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_REPLICATION_USER=replicator
+      - POSTGRESQL_REPLICATION_PASSWORD=replicatorpassword
+      - POSTGRESQL_MASTER_HOST=db-master
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432  # Default PostgreSQL port
+      - POSTGRESQL_MASTER_USER=postgres
+      - POSTGRESQL_MASTER_PASSWORD=postgres
+      - POSTGRESQL_REPLICATION_TIMEOUT=60
+    ports:
+      - "5464:5432"
+    depends_on:
+      - db-master
+    volumes:
+      - slave1_data:/bitnami/postgresql
+    healthcheck:
+      test: ["CMD", "/opt/bitnami/scripts/postgresql/healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL Replica 2
+  db-slave2:
+    image: bitnami/postgresql:latest
+    container_name: db-slave2
+    user: "0:0"  # Run as root
+    environment:
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+      - POSTGRESQL_REPLICATION_MODE=slave
+      - POSTGRESQL_REPLICATION_USER=replicator
+      - POSTGRESQL_REPLICATION_PASSWORD=replicatorpassword
+      - POSTGRESQL_MASTER_HOST=db-master
+      - POSTGRESQL_MASTER_PORT_NUMBER=5432  # Default PostgreSQL port
+      - POSTGRESQL_MASTER_USER=postgres
+      - POSTGRESQL_MASTER_PASSWORD=postgres
+      - POSTGRESQL_REPLICATION_TIMEOUT=60
+    ports:
+      - "5465:5432"
+    depends_on:
+      - db-master
+    volumes:
+      - slave2_data:/bitnami/postgresql
+    healthcheck:
+      test: ["CMD", "/opt/bitnami/scripts/postgresql/healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Pgpool-II for load balancing
+  pgpool:
+    image: bitnami/pgpool:latest
+    container_name: pgpool
+    environment:
+      - PGPOOL_BACKEND_NODES=0:db-master:5432,1:db-slave1:5432,2:db-slave2:5432
+      - PGPOOL_SR_CHECK_PERIOD=10
+      - PGPOOL_POSTGRES_USERNAME=postgres
+      - PGPOOL_POSTGRES_PASSWORD=postgres
+      - PGPOOL_ADMIN_USERNAME=admin
+      - PGPOOL_ADMIN_PASSWORD=adminpassword
+      - PGPOOL_ENABLE_LOAD_BALANCING=yes
+      - PGPOOL_MAX_POOL=4
+      - PGPOOL_POSTGRES_CUSTOM_USERS=replicator
+      - PGPOOL_POSTGRES_CUSTOM_PASSWORDS=replicatorpassword
+      # Add these new environment variables
+      - PGPOOL_SR_CHECK_USER=replicator
+      - PGPOOL_SR_CHECK_PASSWORD=replicatorpassword
+      - PGPOOL_HEALTH_CHECK_USER=postgres
+      - PGPOOL_HEALTH_CHECK_PASSWORD=postgres
+    ports:
+      - "5462:5432"
+    depends_on:
+      - db-master
+      - db-slave1
+      - db-slave2
+    volumes:
+      - pgpool_config:/bitnami/pgpool
+    restart: always
+
+volumes:
+  master_data:
+  slave1_data:
+  slave2_data:
+  pgpool_config:
